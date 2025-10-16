@@ -186,9 +186,9 @@ different column names and distributions.
 Please read **report.md** for a more in‑depth discussion of the approach
 and design rationale.
 
-## Architecture (at a glance)
+## Architecture 
 
-![Data Agent — High‑Level Architecture](docs/architecture.png)
+![Data Agent — High‑Level Architecture](architecture.png)
 
 *Flow:* **Data sources** → **Ingestion & Validation** (schema inference, missing values, stats) → **ChatAgent Orchestrator** (NLQ → plan → code) → **Sandboxed Python Executor** → **Answers & Evidence** (method, columns, filters, hypothesis) + **Logging/Artifacts** and **Security**.
 
