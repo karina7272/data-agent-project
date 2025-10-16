@@ -185,3 +185,52 @@ different column names and distributions.
 
 Please read **report.md** for a more in‑depth discussion of the approach
 and design rationale.
+
+## Architecture (at a glance)
+
+![Data Agent — High‑Level Architecture](docs/architecture.png)
+
+*Flow:* **Data sources** → **Ingestion & Validation** (schema inference, missing values, stats) → **ChatAgent Orchestrator** (NLQ → plan → code) → **Sandboxed Python Executor** → **Answers & Evidence** (method, columns, filters, hypothesis) + **Logging/Artifacts** and **Security**.
+
+## Evaluation (scripted queries)
+
+**Harness:** five pre-written queries covering counts, means, group-by means, filters, and a custom Python expression.  
+**Weighting:** Accuracy 70 %, Speed 30 %.
+
+### Per-Query Results
+
+| # | Query Type   | Correct? | Latency (s) |
+|---|--------------|:--------:|------------:|
+| 1 | count        | No       | 0.000 |
+| 2 | mean         | No       | 0.202 |
+| 3 | groupby_mean | No       | 0.000 |
+| 4 | filter_count | No       | 0.141 |
+| 5 | python       | No       | 0.000 |
+
+Average latency ≈ **0.069 s** (very fast).
+
+### Scoring
+
+| Metric            | Value |
+|-------------------|------:|
+| Accuracy (70 %)   | 0.000 |
+| Avg latency (s)   | 0.069 |
+| Speed score       | 0.936 |
+| **Final score**   | **0.281** |
+
+**Diagnosis.** Speed is excellent; accuracy is limited by the deterministic fallback not applying some **filters/group-bys** exactly as the test expects. Tightening the parser/dispatch and adding unit tests that mirror the evaluation queries will raise the accuracy component substantially.
+
+### Bonus insights
+
+- **High missingness.** 100 % empty: `longitude`, `latitude`. ~78 % missing: `connecting_pipeline`. Additional gaps in `connecting_entity`, `county_name`.
+- **Outliers.** 4,097 rows flagged by z-score; prefer median/trimmed means or exclude outliers for mean calculations.
+- **Collinearity.** `rec_del_sign` ≈ `scheduled_quantity` (near-perfect redundancy); avoid using both in modeling or reduce dimensionality.
+- **K-means segmentation.** Two very large clusters and one tiny cluster (859 rows) with extremely high `scheduled_quantity` and positive `rec_del_sign`—likely special-purpose records or data-entry artifacts; merits review.
+
+### Next steps
+
+- **Fix deterministic path:** exact semantics for `count/mean/groupby/filter_count`; add unit tests matching the scripted queries.
+- **Robust stats:** median/trimmed mean toggle; optional outlier filtering before aggregates.
+- **Missing data:** drop or impute highly missing columns; confirm business relevance of `connecting_pipeline`.
+- **Multicollinearity:** remove redundant variables or apply dimensionality reduction.
+- **Segment follow-up:** investigate the small high-quantity cluster for legitimacy vs. data errors.
