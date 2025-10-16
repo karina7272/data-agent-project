@@ -188,11 +188,9 @@ and design rationale.
 
 ## Architecture 
 
-![Data Agent — High‑Level Architecture](architecture.png)
-
 *Flow:* **Data sources** → **Ingestion & Validation** (schema inference, missing values, stats) → **ChatAgent Orchestrator** (NLQ → plan → code) → **Sandboxed Python Executor** → **Answers & Evidence** (method, columns, filters, hypothesis) + **Logging/Artifacts** and **Security**.
 
-## Evaluation (scripted queries)
+## Evaluation 
 
 **Harness:** five pre-written queries covering counts, means, group-by means, filters, and a custom Python expression.  
 **Weighting:** Accuracy 70 %, Speed 30 %.
