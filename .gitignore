@@ -1,0 +1,5 @@
+# Ignore data files and artifacts
+data/
+*.csv
+*.parquet
+artifacts/
