@@ -1,7 +1,7 @@
 # Data Agent Project
 
 This repository contains a simple yet powerful **data analysis assistant**
-written in Python.  It was developed as a solution to the SynMax
+written in Python.  It was developed as a solution to the 
 Take‑Home Data Agent assignment.  The goal of the project is to
 create a chat‑based agent that can ingest a tabular dataset, understand
 natural‑language questions, perform both deterministic and analytical
